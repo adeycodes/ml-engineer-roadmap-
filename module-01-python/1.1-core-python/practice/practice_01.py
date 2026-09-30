@@ -31,7 +31,20 @@ print(int(x) + y)
 # "F" for scores below 60.
 
 """solution for grade calculator"""
-if 
+student_score = int(input("Enter student score: "))
+
+if student_score >= 90:
+    grade = "A"
+elif student_score >= 80:
+    grade = "B"
+elif student_score >= 70:
+    grade = "C"
+elif student_score >= 60:
+    grade = "D"
+else:
+    grade = "F"
+
+print(f"Grade: {grade}")
 
 
 # Exercise 2: Number loop

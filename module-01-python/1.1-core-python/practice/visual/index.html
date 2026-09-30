@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Grade Calculator</title>
+    <!-- CSS for styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background-color: #1e293b;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+        }
+
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 12px 0;
+            border-radius: 4px;
+            border: 1px solid #475569;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 95%;
+            padding: 10px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .result {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Grade Calculator</h2>
+        <input type="number" id="scoreInput" min="1" max="100" placeholder="Enter score (1-100)"
+            oninput="if (this.value > 100) this.value = 100; if (this.value < 0) this.value = '';">
+        <button onclick="calculateGrade()">Calculate Grade</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <!-- JavaScript connecting HTML to Python -->
+    <script>
+        async function calculateGrade() {
+            const scoreInput = document.getElementById('scoreInput');
+            const resultElement = document.getElementById('result');
+            const rawValue = scoreInput.value.trim();
+
+            // 1. Check if input is empty
+            if (rawValue === '') {
+                resultElement.innerText = "Please enter a score.";
+                return;
+            }
+
+            const score = Number(rawValue);
+
+            // 2. Validate range: strictly between 1 and 100
+            if (isNaN(score) || score < 1 || score > 100) {
+                resultElement.innerText = "Please enter a valid score between 1 and 100.";
+                return;
+            }
+
+            try {
+                // 3. Send valid payload to Python backend
+                const response = await fetch('http://localhost:8000/api/grade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ score: score })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                resultElement.innerText = `Grade: ${data.grade}`;
+            } catch (error) {
+                console.error("Fetch error:", error);
+                resultElement.innerText = "Error connecting to server.";
+            }
+        }
+    </script>
+</body>
+
+</html>
